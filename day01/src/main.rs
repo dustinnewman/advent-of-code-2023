@@ -9,6 +9,9 @@ fn parse_line(line: &str) -> Option<u32> {
     // start position out of all other digits) and then keep track of that
     // digit's index within the DIGITS array which is "sorted" such that the
     // integer value of each digit string is its position % 9 + 1
+    // Time complexity is not the best: O(|DIGITS| * |LINE|) for each digit
+    // we search (in the worst case) the entire line rather than exiting early
+    // at the first match we find which would require more involved byte checking
     let first = DIGITS
         .iter()
         // Enumerate to keep track of digit index
