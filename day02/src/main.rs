@@ -7,9 +7,10 @@ const ELF_MIN_CUBE_SET: CubeSet = CubeSet {
     blue: 14,
     green: 13,
 };
-const SET_SEPARATOR: &str = ";";
-const COLOR_SEPARATOR: &str = ",";
+const SET_SEPARATOR: char = ';';
+const CUBE_SEPARATOR: char = ',';
 const GAME_SEPARATOR: &str = ": ";
+const COLOR_SEPARATOR: char = ' ';
 
 #[derive(Default, Debug)]
 struct CubeSet {
@@ -22,12 +23,12 @@ impl TryFrom<&str> for CubeSet {
     type Error = Box<dyn Error>;
 
     fn try_from(string: &str) -> Result<Self, Self::Error> {
-        let parts = string.split(COLOR_SEPARATOR);
+        let parts = string.split(CUBE_SEPARATOR);
         let mut set = Self::default();
         for part in parts {
             let (amount, color) = part
                 .trim()
-                .split_once(' ')
+                .split_once(COLOR_SEPARATOR)
                 .ok_or("CubeSet does not contain spaces")?;
             let amount: usize = amount.parse()?;
             match color {
@@ -51,12 +52,12 @@ impl TryFrom<&str> for Game {
     type Error = Box<dyn Error>;
 
     fn try_from(line: &str) -> Result<Self, Self::Error> {
-        let (id, sets) = line
+        let (game, sets) = line
             .split_once(GAME_SEPARATOR)
             .ok_or("Line does not have game separator")?;
-        let id: usize = id
+        let id: usize = game
             .strip_prefix("Game ")
-            .ok_or("Game ID does not contain space")?
+            .ok_or("Game ID missing prefix")?
             .parse()?;
         let sets = sets
             .split(SET_SEPARATOR)
